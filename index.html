@@ -1,0 +1,508 @@
+<!DOCTYPE html> <!-- DESIGN CONCEPT: "The Model Card" — an ML-experiment notebook that explains Deepika the way she explains models: with Explainable AI. Signature element: an interactive SHAP-style force plot in the hero. Every skill is a feature you can switch on/off; the bar shows how that feature pushes the "fit" prediction, and hovering a feature highlights the real projects where it was used. Layout: a Jupyter-style "cell" rail (In [1]…[5]), projects as an experiment-tracker table with pipeline strips, skills as a requirements.txt, education as "training data", experience as run logs, contact as deploy(). Type: Fraunces (human, editorial serif) against JetBrains Mono (machine). Paper-white notebook with SHAP red/blue as the only accents. --> <html lang="en"> <head> <meta charset="utf-8"> <meta name="viewport" content="width=device-width, initial-scale=1"> <title>Deepika Gulati — AI / Data Science Engineer</title> <meta name="description" content="Portfolio of Deepika Gulati, final-year B.Tech CSE (AI/ML & Data Science) student building predictive models, NLP systems and explainable AI."> <link rel="preconnect" href="https://fonts.googleapis.com"> <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"> <style> :root{ --paper:#f6f3ec; --paper-2:#efeadf; --card:#fffdf8; --ink:#1b1a17; --ink-2:#4a4741; --line:#d9d2c3; --red:#d6173f; --red-soft:#fde4ea; --blue:#0a64bd; --blue-soft:#e0eefb; --green:#12794a; --serif:'Fraunces',Georgia,'Times New Roman',serif; --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; --rail:92px; } *{box-sizing:border-box;margin:0;padding:0} html{scroll-behavior:smooth;-webkit-text-size-adjust:100%} body{ background:var(--paper); color:var(--ink); font-family:var(--mono); font-size:15px; line-height:1.65; background-image: linear-gradient(var(--line) 1px,transparent 1px); background-size:100% 32px; background-attachment:local; } body::before{ content:"";position:fixed;inset:0;pointer-events:none;z-index:-1; background:var(--paper);opacity:.86; } a{color:inherit} :focus-visible{outline:3px solid var(--blue);outline-offset:3px;border-radius:4px} .skip{position:absolute;left:-999px;top:8px;background:var(--ink);color:#fff;padding:10px 14px;z-index:100;border-radius:6px} .skip:focus{left:8px}
+
+/* ---------- Rail navigation ---------- */
+.rail{
+position:fixed;left:0;top:0;bottom:0;width:var(--rail);
+background:var(--ink);color:
+#f6f3ec;
+display:flex;flex-direction:column;align-items:center;justify-content:space-between;
+padding:22px 8px;z-index:50;
+}
+.rail .logo{
+font-family:var(--serif);font-weight:800;font-size:26px;letter-spacing:-.04em;
+width:48px;height:48px;border-radius:50%;display:grid;place-items:center;
+background:var(--red);color:#fff;text-decoration:none;
+}
+.rail nav{display:flex;flex-direction:column;gap:6px;width:100%}
+.rail nav a{
+text-decoration:none;display:block;text-align:center;
+font-size:11px;line-height:1.3;padding:10px 4px;border-radius:8px;
+color:
+#cfc9bb;border:1px solid transparent;transition:background .2s,color .2s;
+}
+.rail nav a b{display:block;font-weight:500;color:
+#8f897b;font-size:10px;letter-spacing:.04em}
+.rail nav a:hover{background:
+#2c2a26;color:#fff}
+.rail nav a.active{background:
+#f6f3ec;color:var(--ink)}
+.rail nav a.active b{color:var(--red)}
+.rail .status{font-size:10px;color:
+#8f897b;text-align:center;line-height:1.4}
+.rail .status i{display:block;width:8px;height:8px;border-radius:50%;background:
+#35d07f;margin:0 auto 6px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(53,208,127,.6)}50%{box-shadow:0 0 0 7px rgba(53,208,127,0)}}
+
+main{margin-left:var(--rail)}
+.wrap{max-width:1080px;margin:0 auto;padding:0 40px}
+section{padding:84px 0 20px;position:relative}
+.cell-label{
+font-size:12px;color:var(--blue);font-weight:500;margin-bottom:14px;
+display:flex;align-items:center;gap:10px;
+}
+.cell-label::after{content:””;height:1px;background:var(--line);flex:1}
+h2{
+font-family:var(--serif);font-weight:800;font-size:clamp(32px,5vw,52px);line-height:1.05;letter-spacing:-.03em;margin-bottom:12px;
+}
+h2 em{font-style:italic;font-weight:400;color:var(--red)}
+.lede{color:var(--ink-2);max-width:62ch;margin-bottom:34px}
+
+/* ---------- Hero ---------- */
+#profile{padding-top:56px}
+.hero-top{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;font-size:12px;color:var(--ink-2);margin-bottom:34px}
+.hero-top span{background:var(--card);border:1px solid var(--line);padding:4px 10px;border-radius:999px}
+h1{
+font-family:var(--serif);font-weight:800;
+font-size:clamp(52px,11vw,132px);line-height:.92;letter-spacing:-.05em;
+}
+h1 .l2{display:block;font-style:italic;font-weight:400;color:var(--red);margin-left:.5em}
+.role{
+margin-top:22px;font-size:clamp(15px,2vw,18px);font-weight:500;
+}
+.role .cursor{display:inline-block;width:.6em;height:1.1em;background:var(--ink);vertical-align:text-bottom;animation:blink 1s steps(1) infinite;margin-left:3px}
+@keyframes blink{50%{opacity:0}}
+.summary{max-width:68ch;margin-top:16px;color:var(--ink-2)}
+
+/* force plot */
+.plot-card{
+margin-top:48px;background:var(--card);border:1.5px solid var(--ink);border-radius:14px;
+box-shadow:8px 8px 0 var(--ink);padding:26px 26px 22px;
+}
+.plot-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:6px}
+.plot-head h3{font-family:var(--serif);font-size:22px;font-weight:600;letter-spacing:-.01em}
+.plot-head p{font-size:12px;color:var(--ink-2);max-width:56ch}
+.plot-btns{display:flex;gap:8px;flex-wrap:wrap}
+.btn{
+font-family:var(--mono);font-size:12px;font-weight:500;cursor:pointer;
+background:var(--card);color:var(--ink);border:1.5px solid var(--ink);border-radius:8px;padding:8px 12px;
+transition:transform .15s,background .15s;
+}
+.btn:hover{background:var(--paper-2);transform:translateY(-1px)}
+.btn.primary{background:var(--ink);color:#fff}
+.btn.primary:hover{background:
+#34322d}
+.axis{display:flex;justify-content:space-between;font-size:11px;color:var(--ink-2);margin:26px 0 6px}
+.axis b{color:var(--ink)}
+.track{
+position:relative;height:60px;border-radius:8px;display:flex;overflow:hidden;
+background:repeating-linear-gradient(135deg,var(--paper-2) 0 8px,var(--paper) 8px 16px);
+border:1px solid var(--line);
+}
+.seg{
+height:100%;flex:0 0 auto;width:0;overflow:hidden;white-space:nowrap;
+background:var(--red);color:#fff;font-size:11px;font-weight:700;
+display:flex;align-items:center;padding:0 18px 0 22px;
+clip-path:polygon(0 0,calc(100% - 14px) 0,100% 50%,calc(100% - 14px) 100%,0 100%,14px 50%);
+margin-right:-4px;
+transition:width .6s cubic-bezier(.2,.8,.2,1),filter .2s;
+}
+.seg:nth-child(even){background:
+#e6425f}
+.seg.hot{filter:brightness(.82) saturate(1.2)}
+.seg span{overflow:hidden;text-overflow:ellipsis}
+.meter{margin-top:14px;display:flex;align-items:center;gap:14px;font-size:12px}
+.meter .bar{flex:1;height:10px;background:var(--paper-2);border-radius:99px;overflow:hidden;border:1px solid var(--line)}
+.meter .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--red));transition:width .6s cubic-bezier(.2,.8,.2,1)}
+.verdict{font-family:var(--serif);font-size:clamp(20px,3vw,28px);font-weight:600;margin-top:12px;letter-spacing:-.02em;min-height:1.3em}
+.verdict em{color:var(--red)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.chip{
+font-family:var(--mono);font-size:12px;font-weight:500;cursor:pointer;
+border:1.5px solid var(--blue);color:var(--blue);background:var(--blue-soft);
+padding:7px 12px;border-radius:999px;transition:all .2s;
+}
+.chip[aria-pressed="true"]{background:var(--red);border-color:var(--red);color:#fff}
+.chip:hover{transform:translateY(-2px)}
+.evidence{
+margin-top:16px;border-left:4px solid var(--blue);background:var(--blue-soft);
+padding:10px 14px;font-size:13px;border-radius:0 8px 8px 0;min-height:3.4em;
+}
+.evidence b{font-weight:700}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:34px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+.stat .n{font-family:var(--serif);font-weight:800;font-size:clamp(32px,4.5vw,48px);line-height:1;letter-spacing:-.04em}
+.stat .n sup{font-size:.4em;color:var(--red);font-weight:600}
+.stat .t{font-size:12px;color:var(--ink-2);margin-top:8px}
+
+/* ---------- Runs (projects) ---------- */
+.runs{border:1.5px solid var(--ink);border-radius:14px;overflow:hidden;background:var(--card)}
+.runs-head,.run summary{
+display:grid;grid-template-columns:84px 1.5fr 2fr 30px;gap:14px;align-items:center;padding:14px 20px;
+}
+.runs-head{background:var(--ink);color:
+#cfc9bb;font-size:11px;text-transform:uppercase;letter-spacing:.08em}
+.run{border-top:1px solid var(--line);transition:background .25s,box-shadow .25s}
+.run:first-of-type{border-top:0}
+.run summary{cursor:pointer;list-style:none}
+.run summary::-webkit-details-marker{display:none}
+.run summary:hover{background:var(--paper-2)}
+.run .id{font-size:12px;color:var(--ink-2)}
+.run .name{font-family:var(--serif);font-weight:600;font-size:clamp(17px,2.2vw,22px);line-height:1.15;letter-spacing:-.015em}
+.run .libs{font-size:12px;color:var(--ink-2)}
+.run .caret{transition:transform .25s;justify-self:end;font-size:18px}
+.run[open] .caret{transform:rotate(45deg)}
+.run.hl{background:var(--red-soft);box-shadow:inset 6px 0 0 var(--red)}
+.run.hl summary:hover{background:var(--red-soft)}
+.run-body{padding:6px 20px 24px 118px}
+.pipe{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:6px 0 16px}
+.pipe span{font-size:11px;font-weight:500;padding:5px 10px;border:1.5px solid var(--ink);border-radius:6px;background:var(--paper)}
+.pipe i{font-style:normal;color:var(--red);font-weight:700}
+.run-body ul{list-style:none;display:grid;gap:8px}
+.run-body li{padding-left:22px;position:relative;max-width:78ch}
+.run-body li::before{content:”▸”;position:absolute;left:0;color:var(--red)}
+
+/* ---------- Requirements ---------- */
+.req{background:var(--ink);color:
+#e9e4d6;border-radius:14px;padding:26px;font-size:13px;overflow-x:auto;box-shadow:8px 8px 0 var(--red)}
+.req .bar{display:flex;gap:6px;margin-bottom:18px}
+.req .bar i{width:11px;height:11px;border-radius:50%;background:
+#4a4741}
+.req .bar i:nth-child(1){background:
+#ff5f57}.req .bar i:nth-child(2){background:
+#febc2e}.req .bar i:nth-child(3){background:
+#28c840}
+.req .grp{margin-bottom:18px}
+.req .c{color:
+#8f897b}
+.req .k{color:
+#ff8da1}
+.req .pk{display:inline-block;margin:3px 8px 3px 0;padding:2px 9px;border:1px solid 
+#4a4741;border-radius:6px;color:#fff;transition:background .2s,border-color .2s}
+.req .pk:hover{background:
+#2c2a26;border-color:
+#ff8da1}
+.req .prompt{color:
+#35d07f}
+
+/* ---------- Training data + Logs ---------- */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+.panel{background:var(--card);border:1.5px solid var(--ink);border-radius:14px;padding:22px}
+.panel h3{font-family:var(--serif);font-size:24px;font-weight:600;letter-spacing:-.02em;margin-bottom:4px}
+.panel .sub{font-size:12px;color:var(--ink-2);margin-bottom:18px}
+.edu{display:grid;gap:16px}
+.edu div{border-bottom:1px dashed var(--line);padding-bottom:14px}
+.edu div:last-child{border:0;padding:0}
+.edu .what{font-weight:700}
+.edu .where{font-size:13px;color:var(--ink-2)}
+.edu .score{display:flex;align-items:center;gap:10px;margin-top:8px;font-size:12px}
+.edu .score .b{flex:1;height:8px;background:var(--paper-2);border-radius:99px;overflow:hidden;border:1px solid var(--line)}
+.edu .score .b i{display:block;height:100%;background:var(--blue);width:0;transition:width 1s cubic-bezier(.2,.8,.2,1)}
+.logs{display:grid;gap:18px}
+.log{font-size:13px;border-left:3px solid var(--red);padding-left:14px}
+.log time{color:var(--ink-2);font-size:12px}
+.log b{display:block;font-family:var(--serif);font-size:19px;font-weight:600;letter-spacing:-.01em}
+.certs{margin-top:22px;padding-top:18px;border-top:1px dashed var(--line);display:grid;gap:8px;font-size:13px}
+.certs span{display:flex;gap:10px}
+.certs span::before{content:”✓”;color:var(--green);font-weight:700}
+
+/* ---------- Contact ---------- */
+.deploy{background:var(--ink);color:
+#f6f3ec;border-radius:16px;padding:clamp(24px,4vw,46px);box-shadow:8px 8px 0 var(--blue)}
+.deploy h2{color:#fff}
+.deploy .lede{color:
+#cfc9bb}
+.deploy .cell-label{color:
+#8dc2f5}
+.deploy .cell-label::after{background:
+#4a4741}
+.dgrid{display:grid;grid-template-columns:1.1fr 1fr;gap:30px}
+form{display:grid;gap:12px}
+label{font-size:12px;color:
+#cfc9bb}
+input,textarea{
+width:100%;font-family:var(--mono);font-size:14px;margin-top:5px;
+background:
+#2c2a26;color:#fff;border:1.5px solid 
+#5a5750;border-radius:8px;padding:11px 12px;
+}
+input::placeholder,textarea::placeholder{color:
+#9a9486}
+textarea{min-height:120px;resize:vertical}
+.deploy .btn{background:var(--red);border-color:var(--red);color:#fff;padding:12px 16px;font-size:13px}
+.deploy .btn:hover{background:
+#ef2a52}
+.deploy .btn.ghost{background:transparent;border-color:
+#8f897b}
+.links{display:grid;gap:10px;align-content:start}
+.links a{
+display:flex;justify-content:space-between;gap:12px;align-items:center;text-decoration:none;
+border:1.5px solid 
+#5a5750;border-radius:10px;padding:13px 14px;font-size:13px;word-break:break-all;
+transition:border-color .2s,transform .2s,background .2s;
+}
+.links a:hover{border-color:
+#ff8da1;background:
+#2c2a26;transform:translateX(4px)}
+.links a small{color:
+#9a9486;font-size:11px;flex:none}
+.copied{font-size:12px;color:
+#35d07f;min-height:1.4em}
+footer{padding:50px 0 40px;font-size:12px;color:var(--ink-2);text-align:center}
+
+/* reveal */
+.js .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease}
+.js .reveal.in{opacity:1;transform:none}
+
+/* ---------- Responsive ---------- /
+@media (max-width:900px){
+:root{--rail:0px}
+.rail{
+top:auto;bottom:0;left:0;right:0;width:100%;height:auto;flex-direction:row;padding:6px 8px;gap:8px;justify-content:center;
+border-top:2px solid var(--red);
+}
+.rail .logo,.rail .status{display:none}
+.rail nav{flex-direction:row;justify-content:space-between;max-width:520px}
+.rail nav a{flex:1;padding:7px 2px;font-size:10px}
+main{margin-left:0;padding-bottom:70px}
+.wrap{padding:0 20px}
+section{padding-top:64px}
+.stats{grid-template-columns:1fr 1fr}
+.two,.dgrid{grid-template-columns:1fr}
+.runs-head{display:none}
+.run summary{grid-template-columns:1fr 24px;gap:4px 10px;padding:14px 16px}
+.run .id{grid-column:1}
+.run .name{grid-column:1}
+.run .libs{grid-column:1}
+.run .caret{grid-row:1/4;grid-column:2}
+.run-body{padding:4px 16px 20px}
+.plot-card{padding:18px 16px;box-shadow:5px 5px 0 var(--ink)}
+.seg{padding:0 14px 0 18px}
+h1 .l2{margin-left:.2em}
+}
+@media (max-width:420px){
+body{font-size:14px}
+.track{height:48px}
+.seg{font-size:10px}
+}
+@media (prefers-reduced-motion:reduce){
+html{scroll-behavior:auto}
+,::before,::after{animation:none!important;transition:none!important}
+.js .reveal{opacity:1;transform:none}
+}
+</style>
+
+</head> <body> <a class="skip" href="#profile">Skip to content</a> <aside class="rail" aria-label="Site"> <a class="logo" href="#profile" aria-label="Deepika Gulati, top of page">DG</a> <nav aria-label="Sections"> <a href="#profile" data-sec="profile"><b>In [1]</b>profile</a> <a href="#runs" data-sec="runs"><b>In [2]</b>runs</a> <a href="#stack" data-sec="stack"><b>In [3]</b>stack</a> <a href="#logs" data-sec="logs"><b>In [4]</b>logs</a> <a href="#contact" data-sec="contact"><b>In [5]</b>deploy</a> </nav> <div class="status"><i></i>open to<br>roles</div> </aside> <main> <!-- ============ IN [1] PROFILE ============ --> <section id="profile" aria-labelledby="name"> <div class="wrap"> <div class="hero-top reveal"> <span>📍 Hoshiarpur, Punjab</span> <span>🎓 Final-year B.Tech CSE · AI/ML &amp; Data Science</span> <span>🧪 notebook.ipynb · kernel: python3</span> </div>
+  <div class="cell-label">In [1]: model_card(candidate)</div>
+  <h1 id="name" class="reveal">Deepika<span class="l2">Gulati</span></h1>
+  <p class="role reveal">AI / Data Science Engineer<span class="cursor" aria-hidden="true"></span></p>
+  <p class="summary reveal">Detail-oriented and fast-learning, I build predictive models, run exploratory data analysis and apply statistics to real-world problems. I'm looking for a Data Scientist role where machine learning and data-driven problem-solving deliver measurable business impact.</p>
+
+  <div class="plot-card reveal">
+    <div class="plot-head">
+      <div>
+        <h3>Why this candidate? An explainable prediction.</h3>
+        <p>Like the SHAP models I build, my profile should be explainable. Toggle a feature and watch the prediction move. Hover to see the project where I used it. <em>(Bar widths are illustrative, not measured scores.)</em></p>
+      </div>
+      <div class="plot-btns">
+        <button class="btn primary" id="runAll" type="button">▶ Run model</button>
+        <button class="btn" id="resetAll" type="button">Reset to baseline</button>
+      </div>
+    </div>
+
+    <div class="axis" aria-hidden="true"><span>base value · <b>average applicant</b></span><span>output · <b>f(x) = Deepika</b></span></div>
+    <div class="track" id="track" role="img" aria-label="Force plot showing how each skill feature increases the fit prediction"></div>
+    <div class="meter">
+      <span>fit signal</span>
+      <div class="bar"><i id="fill"></i></div>
+      <span id="count">0 / 9 features</span>
+    </div>
+    <p class="verdict" id="verdict" aria-live="polite"></p>
+
+    <div class="chips" id="chips" role="group" aria-label="Skill features"></div>
+    <div class="evidence" id="evidence" aria-live="polite"><b>feature_evidence</b> — hover, focus or tap a feature to see where it shows up in my projects.</div>
+  </div>
+
+  <div class="stats">
+    <div class="stat reveal"><div class="n" data-count="8.6">8.6</div><div class="t">CGPA · B.Tech CSE (AI / Data Science), GNA University</div></div>
+    <div class="stat reveal"><div class="n">&lt;2<sup>s</sup></div><div class="t">real-time facial verification in EduPulse</div></div>
+    <div class="stat reveal"><div class="n">5</div><div class="t">end-to-end ML / NLP / analytics projects</div></div>
+    <div class="stat reveal"><div class="n">2</div><div class="t">internships: Data Engineering &amp; AI/ML</div></div>
+  </div>
+</div>
+</section> <!-- ============ IN [2] RUNS ============ --> <section id="runs" aria-labelledby="runs-h"> <div class="wrap"> <div class="cell-label">In [2]: tracker.list_runs()</div> <h2 id="runs-h" class="reveal">Experiment <em>runs</em></h2> <p class="lede reveal">Five projects, each logged like an experiment: what went in, what pipeline ran, and what shipped. Open a run to see the details. Rows glow when they use the feature you're inspecting above.</p>
+  <div class="runs reveal" id="runList">
+    <div class="runs-head" aria-hidden="true"><span>run</span><span>project</span><span>stack</span><span></span></div>
+
+    <details class="run" data-tags="python ml cv xai api" open>
+      <summary>
+        <span class="id">run_01</span>
+        <span class="name">EduPulse: Agentic AI Smart Attendance &amp; Student Support</span>
+        <span class="libs">OpenCV · Random Forest · SHAP · FastAPI · SMTP</span>
+        <span class="caret" aria-hidden="true">+</span>
+      </summary>
+      <div class="run-body">
+        <div class="pipe" aria-label="Pipeline"><span>Webcam</span><i>→</i><span>OpenCV face verify</span><i>→</i><span>Random Forest + SHAP</span><i>→</i><span>FastAPI agent</span><i>→</i><span>SMTP alerts</span></div>
+        <ul>
+          <li>Built a zero-contact biometric pipeline with OpenCV: real-time facial verification through webcams in under 2 seconds, eliminating manual attendance logging.</li>
+          <li>Developed a dropout-risk classifier (Random Forest) paired with SHAP Explainable AI, so every prediction comes with transparent feature-attribution insights.</li>
+          <li>Implemented autonomous agent workflows with FastAPI and SMTP that dispatch performance summaries and proactive email alerts to advisors and guardians.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="run" data-tags="python ml nlp dl">
+      <summary>
+        <span class="id">run_02</span>
+        <span class="name">MindGuard AI</span>
+        <span class="libs">NLP · TF-IDF · Logistic Regression · Transformers</span>
+        <span class="caret" aria-hidden="true">+</span>
+      </summary>
+      <div class="run-body">
+        <div class="pipe"><span>Text input</span><i>→</i><span>TF-IDF / Transformer</span><i>→</i><span>Emotion &amp; stress detection</span><i>→</i><span>Safety-focused reply</span></div>
+        <ul>
+          <li>Built an AI mental-health assistant that detects user emotions and stress levels from text using NLP and machine learning.</li>
+          <li>Combined TF-IDF, Logistic Regression and transformer models to identify critical situations and automatically deliver supportive, safety-focused responses.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="run" data-tags="python nlp dl viz">
+      <summary>
+        <span class="id">run_03</span>
+        <span class="name">AI Resume Matcher</span>
+        <span class="libs">Sentence-BERT · spaCy · PyMuPDF · Streamlit · Pandas</span>
+        <span class="caret" aria-hidden="true">+</span>
+      </summary>
+      <div class="run-body">
+        <div class="pipe"><span>PDF resume</span><i>→</i><span>PyMuPDF + spaCy NER</span><i>→</i><span>SBERT embeddings</span><i>→</i><span>Cosine similarity</span><i>→</i><span>Streamlit dashboard</span></div>
+        <ul>
+          <li>Developed an end-to-end NLP app using Sentence-BERT and cosine similarity for context-aware semantic matching between candidates and job listings.</li>
+          <li>Integrated spaCy Named Entity Recognition and PyMuPDF to extract structured skill data from unstructured PDF resumes.</li>
+          <li>Architected an interactive Streamlit dashboard on Pandas pipelines that renders real-time match scores and skill-breakdown visualizations.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="run" data-tags="python ml api">
+      <summary>
+        <span class="id">run_04</span>
+        <span class="name">Crop Recommendation System</span>
+        <span class="libs">Scikit-Learn · Flask · serialized .pkl model</span>
+        <span class="caret" aria-hidden="true">+</span>
+      </summary>
+      <div class="run-body">
+        <div class="pipe"><span>Soil &amp; climate inputs</span><i>→</i><span>Scikit-Learn model</span><i>→</i><span>.pkl</span><i>→</i><span>Flask backend</span><i>→</i><span>Web interface</span></div>
+        <ul>
+          <li>Designed a precision-agriculture ML model with Scikit-Learn that predicts the optimal crop from specific soil and climate parameters.</li>
+          <li>Built a lightweight Flask backend serving serialized (.pkl) model files, connecting inference directly to an interactive web interface.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="run" data-tags="python eda viz">
+      <summary>
+        <span class="id">run_05</span>
+        <span class="name">Telecom Churn Analysis</span>
+        <span class="libs">Pandas · NumPy · Matplotlib · Seaborn</span>
+        <span class="caret" aria-hidden="true">+</span>
+      </summary>
+      <div class="run-body">
+        <div class="pipe"><span>Customer data</span><i>→</i><span>Cleaning &amp; features</span><i>→</i><span>EDA</span><i>→</i><span>Churn drivers</span><i>→</i><span>Stakeholder visuals</span></div>
+        <ul>
+          <li>Ran comprehensive EDA on customer datasets with Pandas and NumPy to pin down the core drivers of subscriber attrition.</li>
+          <li>Engineered cleaning and feature-transformation pipelines that handle missing values and severe class imbalance.</li>
+          <li>Built Matplotlib and Seaborn visualizations that communicate churn trends around contract structures and payment plans to stakeholders.</li>
+        </ul>
+      </div>
+    </details>
+  </div>
+</div>
+</section> <!-- ============ IN [3] STACK ============ --> <section id="stack" aria-labelledby="stack-h"> <div class="wrap"> <div class="cell-label">In [3]: !cat requirements.txt</div> <h2 id="stack-h" class="reveal">The <em>stack</em></h2> <p class="lede reveal">Everything I work with, installed and ready.</p>
+  <div class="req reveal">
+    <div class="bar" aria-hidden="true"><i></i><i></i><i></i></div>
+    <div class="grp"><div><span class="prompt">$</span> pip freeze <span class="c">| grep deepika</span></div></div>
+
+    <div class="grp"><div class="c"># programming &amp; tools</div>
+      <span class="pk">Python</span><span class="pk">Basic Java</span><span class="pk">Basic C++</span><span class="pk">Basic SQL</span><span class="pk">CI/CD basics (GitHub Actions)</span></div>
+    <div class="grp"><div class="c"># data science &amp; machine learning</div>
+      <span class="pk">Machine Learning</span><span class="pk">Deep Learning</span><span class="pk">EDA</span><span class="pk">NLP</span><span class="pk">Computer Vision</span><span class="pk">Statistical Modeling</span><span class="pk">Predictive Modeling</span></div>
+    <div class="grp"><div class="c"># libraries &amp; frameworks</div>
+      <span class="pk">Pandas</span><span class="pk">NumPy</span><span class="pk">Scikit-Learn</span><span class="pk">TensorFlow</span><span class="pk">PyTorch</span><span class="pk">OpenCV</span><span class="pk">spaCy</span><span class="pk">Sentence-Transformers</span></div>
+    <div class="grp"><div class="c"># generative AI &amp; NLP</div>
+      <span class="pk">Basic LLMs</span><span class="pk">Transformer Models</span><span class="pk">BERT</span><span class="pk">RAG</span><span class="pk">Explainable AI (SHAP)</span></div>
+    <div class="grp"><div class="c"># visualization &amp; analytics</div>
+      <span class="pk">Power BI</span><span class="pk">Power Query</span><span class="pk">Streamlit</span><span class="pk">Matplotlib</span><span class="pk">Seaborn</span></div>
+    <div class="grp"><div class="c"># mathematics &amp; statistics</div>
+      <span class="pk">Probability</span><span class="pk">Linear Algebra</span><span class="pk">Calculus</span><span class="pk">Hypothesis Testing</span><span class="pk">Regression Analysis</span></div>
+    <div class="grp"><div class="c"># version control &amp; collaboration</div>
+      <span class="pk">Git / GitHub</span><span class="pk">Teamwork</span><span class="pk">Project collaboration</span></div>
+    <div><div class="c"># soft skills</div>
+      <span class="pk">Problem-solving</span><span class="pk">Analytical thinking</span><span class="pk">Adaptability</span><span class="pk">Communication</span><span class="pk">Continuous learning</span></div>
+  </div>
+</div>
+</section> <!-- ============ IN [4] LOGS ============ --> <section id="logs" aria-labelledby="logs-h"> <div class="wrap"> <div class="cell-label">In [4]: load_training_data(); show_logs()</div> <h2 id="logs-h" class="reveal">Training data <em>&amp; logs</em></h2> <p class="lede reveal">Where the model was trained, and where it has been deployed so far.</p>
+  <div class="two">
+    <div class="panel reveal">
+      <h3>Training data</h3>
+      <p class="sub">education.csv</p>
+      <div class="edu" id="edu">
+        <div>
+          <div class="what">B.Tech CSE (AI / Data Science)</div>
+          <div class="where">GNA University · final year · expected</div>
+          <div class="score"><span>CGPA 8.6</span><span class="b"><i data-w="86"></i></span></div>
+        </div>
+        <div>
+          <div class="what">12th · Non-Medical</div>
+          <div class="where">Ch. Balbir Singh Sr. Sec. School · 2023</div>
+          <div class="score"><span>75%</span><span class="b"><i data-w="75"></i></span></div>
+        </div>
+        <div>
+          <div class="what">10th</div>
+          <div class="where">Ch. Balbir Singh Sr. Sec. School · 2021</div>
+          <div class="score"><span>85%</span><span class="b"><i data-w="85"></i></span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel reveal">
+      <h3>Deployment logs</h3>
+      <p class="sub">experience.log</p>
+      <div class="logs">
+        <div class="log">
+          <time datetime="2026-07">July 2026 – August 2026</time>
+          <b>Data Engineering Intern</b>
+          Sonalika, Hoshiarpur
+        </div>
+        <div class="log">
+          <time datetime="2026-05">May 2026 – June 2026</time>
+          <b>AI/ML Intern</b>
+          Indian Servers · Remote
+        </div>
+      </div>
+      <div class="certs">
+        <strong>Certificates</strong>
+        <span>Data Analytic Training — ICT Academy</span>
+        <span>Industrial Training in Data Science — O7 Services</span>
+      </div>
+    </div>
+  </div>
+</div>
+</section> <!-- ============ IN [5] CONTACT ============ --> <section id="contact" aria-labelledby="contact-h"> <div class="wrap"> <div class="deploy reveal"> <div class="cell-label">In [5]: deploy(Deepika, to=your_team)</div> <h2 id="contact-h">Ready to <em>deploy.</em></h2> <p class="lede">I'm seeking a Data Scientist role. Send a note and it opens straight in your email app, or use any link on the right.</p>
+    <div class="dgrid">
+      <form id="mailForm" aria-label="Send me an email">
+        <label>Your name
+          <input type="text" id="fName" name="name" autocomplete="name" placeholder="Ada Lovelace" required>
+        </label>
+        <label>Your email
+          <input type="email" id="fEmail" name="email" autocomplete="email" placeholder="you@company.com">
+        </label>
+        <label>Message
+          <textarea id="fMsg" name="message" placeholder="Hi Deepika, we'd love to talk about…" required></textarea>
+        </label>
+        <button class="btn" type="submit">Send via email →</button>
+      </form>
+
+      <div class="links">
+        <a href="mailto:544deepika@gmail.com"><span>544deepika@gmail.com</span><small>email</small></a>
+        <a href="tel:+919465702297"><span>+91 94657 02297</span><small>call</small></a>
+        <a href="https://github.com/Deepika688462" target="_blank" rel="noopener noreferrer"><span>github.com/Deepika688462</span><small>github ↗</small></a>
+        <a href="https://linkedin.com/in/deepika-gulati-98b5512a3" target="_blank" rel="noopener noreferrer"><span>linkedin.com/in/deepika-gulati-98b5512a3</span><small>linkedin ↗</small></a>
+        <button class="btn ghost" type="button" id="copyMail" style="color:#f6f3ec">Copy email address</button>
+        <div class="copied" id="copied" role="status" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+  <footer>© <span id="yr">2026</span> Deepika Gulati · Hoshiarpur, Punjab · rendered with plain HTML, CSS &amp; JS</footer>
+</div>
+</section> </main> <script> (function(){ document.documentElement.classList.add('js'); var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; /* ---------- Features (force plot) ---------- */ var features = [ {k:'python', label:'Python', w:14, ev:'Python powers every project I have built, from OpenCV pipelines to Streamlit apps and Flask backends.'}, {k:'ml', label:'Machine Learning', w:14, ev:'Random Forest in <b>EduPulse</b>, Logistic Regression in <b>MindGuard AI</b>, and a Scikit-Learn model in <b>Crop Recommendation</b>.'}, {k:'nlp', label:'NLP', w:12, ev:'Emotion and stress detection in <b>MindGuard AI</b>; Sentence-BERT matching and spaCy NER in <b>AI Resume Matcher</b>.'}, {k:'cv', label:'Computer Vision', w:9, ev:'OpenCV facial verification in under 2 seconds in <b>EduPulse</b>.'}, {k:'xai', label:'Explainable AI (SHAP)', w:10, ev:'SHAP feature attribution explains every dropout-risk prediction in <b>EduPulse</b>.'}, {k:'eda', label:'EDA & Statistics', w:11, ev:'Churn-driver analysis with Pandas and NumPy in <b>Telecom Churn Analysis</b>, backed by probability, hypothesis testing and regression.'}, {k:'dl', label:'Deep Learning', w:8, ev:'Transformer models in <b>MindGuard AI</b> and Sentence-BERT embeddings in <b>AI Resume Matcher</b>; TensorFlow and PyTorch in my toolkit.'}, {k:'viz', label:'Data Viz', w:9, ev:'Streamlit dashboard in <b>AI Resume Matcher</b>; Matplotlib and Seaborn in <b>Telecom Churn Analysis</b>; Power BI and Power Query in my toolkit.'}, {k:'api', label:'Flask / FastAPI', w:7, ev:'FastAPI agent workflows in <b>EduPulse</b>; Flask model-serving backend in <b>Crop Recommendation</b>.'} ]; var total = features.reduce(function(a,f){return a+f.w},0); var state = {}; features.forEach(function(f){state[f.k]=false}); var track = document.getElementById('track'); var chips = document.getElementById('chips'); var fill = document.getElementById('fill'); var count = document.getElementById('count'); var verdict = document.getElementById('verdict'); var evidence = document.getElementById('evidence'); var runs = Array.prototype.slice.call(document.querySelectorAll('.run')); var segs = {}, chipEls = {}; features.forEach(function(f){ var s = document.createElement('div'); s.className = 'seg'; s.dataset.k = f.k; s.innerHTML = '<span>'+f.label+'</span>'; track.appendChild(s); segs[f.k] = s; var c = document.createElement('button'); c.type = 'button'; c.className = 'chip'; c.textContent = f.label; c.setAttribute('aria-pressed','false'); c.addEventListener('click', function(){ state[f.k] = !state[f.k]; inspect(f.k); render(); }); c.addEventListener('mouseenter', function(){ inspect(f.k); }); c.addEventListener('focus', function(){ inspect(f.k); }); chips.appendChild(c); chipEls[f.k] = c; }); function inspect(k){ var f = features.filter(function(x){return x.k===k})[0]; evidence.innerHTML = '<b>' + f.label + '</b> — ' + f.ev; runs.forEach(function(r){ var has = r.dataset.tags.split(' ').indexOf(k) > -1; r.classList.toggle('hl', has); }); Object.keys(segs).forEach(function(x){ segs[x].classList.toggle('hot', x===k); }); } function render(){ var on = 0, sum = 0; features.forEach(function(f){ var active = state[f.k]; segs[f.k].style.width = active ? (f.w/total*100)+'%' : '0%'; chipEls[f.k].setAttribute('aria-pressed', active ? 'true':'false'); if(active){on++; sum+=f.w;} }); var pct = sum/total*100; fill.style.width = pct+'%'; count.textContent = on+' / '+features.length+' features'; if(on===0) verdict.innerHTML = 'Baseline applicant. <em>Switch features on</em> to see the model change its mind.'; else if(pct < 45) verdict.innerHTML = 'Promising, but the model wants <em>more evidence</em>…'; else if(pct < 100) verdict.innerHTML = 'Getting there. <em>Strong signal</em>, turn on the rest.'; else verdict.innerHTML = 'Prediction: <em>shortlist her.</em>'; } var timer = null; function runAll(){ clearInterval(timer); features.forEach(function(f){state[f.k]=false}); render(); if(reduce){ features.forEach(function(f){state[f.k]=true}); render(); return; } var i = 0; timer = setInterval(function(){ if(i>=features.length){ clearInterval(timer); return; } state[features[i].k] = true; render(); i++; }, 260); } document.getElementById('runAll').addEventListener('click', runAll); document.getElementById('resetAll').addEventListener('click', function(){ clearInterval(timer); features.forEach(function(f){state[f.k]=false}); render(); runs.forEach(function(r){r.classList.remove('hl')}); Object.keys(segs).forEach(function(x){ segs[x].classList.remove('hot'); }); }); render(); setTimeout(runAll, reduce ? 0 : 700); /* ---------- Reveal on scroll + education bars ---------- */ var revealEls = document.querySelectorAll('.reveal'); var eduBars = document.querySelectorAll('.edu .b i'); function fillBars(){ eduBars.forEach(function(b){ b.style.width = b.dataset.w+'%'; }); } if('IntersectionObserver' in window && !reduce){ var io = new IntersectionObserver(function(entries){ entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); if(e.target.querySelector && e.target.querySelector('.edu')) fillBars(); io.unobserve(e.target); } }); },{threshold:.12}); revealEls.forEach(function(el){io.observe(el)}); } else { revealEls.forEach(function(el){el.classList.add('in')}); fillBars(); } /* ---------- Active rail link ---------- */ var links = Array.prototype.slice.call(document.querySelectorAll('.rail nav a')); var secs = links.map(function(a){return document.getElementById(a.dataset.sec)}); function setActive(){ var y = window.scrollY + window.innerHeight*0.35, cur = 0; secs.forEach(function(s,i){ if(s.offsetTop <= y) cur = i; }); links.forEach(function(a,i){ if(i===cur) a.classList.add('active'); else a.classList.remove('active'); if(i===cur) a.setAttribute('aria-current','true'); else a.removeAttribute('aria-current'); }); } window.addEventListener('scroll', setActive, {passive:true}); window.addEventListener('resize', setActive); setActive(); /* ---------- Contact ---------- */ var EMAIL = '544deepika@gmail.com'; document.getElementById('mailForm').addEventListener('submit', function(e){ e.preventDefault(); var n = document.getElementById('fName').value.trim(); var m = document.getElementById('fEmail').value.trim(); var t = document.getElementById('fMsg').value.trim(); var body = t + '\n\n— ' + n + (m ? ' (' + m + ')' : ''); window.location.href = 'mailto:' + EMAIL + '?subject=' + encodeURIComponent('Hello from ' + n + ' (via portfolio)') + '&body=' + encodeURIComponent(body); }); document.getElementById('copyMail').addEventListener('click', function(){ var out = document.getElementById('copied'); function ok(){ out.textContent = 'Copied ' + EMAIL + ' ✓'; setTimeout(function(){out.textContent=''},2600); } if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(EMAIL).then(ok, function(){ out.textContent = 'Email: ' + EMAIL; }); } else { var ta = document.createElement('textarea'); ta.value = EMAIL; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); ok(); }catch(err){ out.textContent = 'Email: ' + EMAIL; } document.body.removeChild(ta); } }); document.getElementById('yr').textContent = new Date().getFullYear(); })(); </script> </body> </html>
